@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="VehicleApp" ng-controller="AdminController">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VehicleServe — Admin Panel</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<div class="admin-layout">
+
+  <!-- ══════════════ SIDEBAR ══════════════ -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-logo">⚙ VehicleServe</div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-link" ng-class="{active: activeTab==='dashboard'}"   ng-click="setTab('dashboard')">
+        <span class="sidebar-icon">📊</span>
+        <span class="sidebar-link-text">Dashboard</span>
+      </div>
+      <div class="sidebar-link" ng-class="{active: activeTab==='appointments'}" ng-click="setTab('appointments')">
+        <span class="sidebar-icon">🗓</span>
+        <span class="sidebar-link-text">Appointments</span>
+      </div>
+      <div class="sidebar-link" ng-class="{active: activeTab==='customers'}"   ng-click="setTab('customers')">
+        <span class="sidebar-icon">👤</span>
+        <span class="sidebar-link-text">Customers</span>
+      </div>
+      <div class="sidebar-link" ng-class="{active: activeTab==='vehicles'}"    ng-click="setTab('vehicles')">
+        <span class="sidebar-icon">🚗</span>
+        <span class="sidebar-link-text">Vehicles</span>
+      </div>
+      <div class="sidebar-link" ng-class="{active: activeTab==='mechanics'}"   ng-click="setTab('mechanics')">
+        <span class="sidebar-icon">🔧</span>
+        <span class="sidebar-link-text">Mechanics</span>
+      </div>
+      <div class="sidebar-link" ng-class="{active: activeTab==='invoices'}"   ng-click="setTab('invoices')">
+        <span class="sidebar-icon">🧾</span>
+        <span class="sidebar-link-text">Invoices</span>
+      </div>
+    </nav>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="login.html" class="btn-secondary full sm">Logout</a>
+    </div>
+  </aside>
+
+  <!-- ══════════════ MAIN CONTENT ══════════════ -->
+  <main class="admin-content">
+
+    <!-- ── DASHBOARD ── -->
+    <div ng-show="activeTab === 'dashboard'" class="fade-in-up">
+      <div class="page-heading mb-8">Dashboard</div>
+      <div class="page-subheading">Overview of all service activity</div>
+
+      <div class="grid-4 mb-24">
+        <div class="stat-card">
+          <span class="stat-icon">🗓</span>
+          <div class="stat-number">{{stats.totalAppointments}}</div>
+          <div class="stat-label">Total Appointments</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">⏳</span>
+          <div class="stat-number warn">{{stats.pending}}</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">✅</span>
+          <div class="stat-number green">{{stats.completed}}</div>
+          <div class="stat-label">Completed</div>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon">👤</span>
+          <div class="stat-number">{{stats.customers}}</div>
+          <div class="stat-label">Customers</div>
+        </div>
+      </div>
+
+      <div class="vs-card">
+        <div class="card-header">
+          <span class="card-title">All Appointments</span>
+        </div>
+        <div class="empty-state" ng-if="appointments.length === 0">
+          <div class="empty-icon">📋</div>No appointments found.
+        </div>
+        <div class="table-wrap" ng-if="appointments.length > 0">
+          <table class="vs-table">
+            <thead>
+              <tr>
+                <th>#</th><th>Customer</th><th>Vehicle</th><th>Service</th><th>Date</th><th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="a in appointments">
+                <td class="color-muted">{{$index + 1}}</td>
+                <td class="fw-600">{{a.firstName}} {{a.lastName}}</td>
+                <td>{{a.make}} {{a.model}} ({{a.registrationNo}})</td>
+                <td>{{a.serviceType}}</td>
+                <td>{{a.appointmentDate | date:'dd MMM yyyy'}}</td>
+                <td><span ng-class="statusClass(a.status)">{{a.status}}</span></td>
+                <td>
+                  <div class="td-actions">
+                    <button class="btn-primary sm"  ng-if="a.status === 'Pending'"                                   ng-click="updateStatus(a,'Approved')">Approve</button>
+                    <button class="btn-success"     ng-if="a.status !== 'Completed' && a.status !== 'Cancelled'"     ng-click="updateStatus(a,'Completed')">Complete</button>
+                    <button class="btn-danger"      ng-if="a.status !== 'Cancelled' && a.status !== 'Completed'"     ng-click="updateStatus(a,'Cancelled')">Cancel</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── APPOINTMENTS TAB ── -->
+    <div ng-show="activeTab === 'appointments'" class="fade-in-up">
+      <div class="page-heading mb-8">Appointments</div>
+      <div class="page-subheading">Manage all service bookings</div>
+      <div class="vs-card">
+        <div class="card-header">
+          <span class="card-title">All Appointments</span>
+          <span class="badge badge-pending">{{stats.pending}} Pending</span>
+        </div>
+        <div class="empty-state" ng-if="appointments.length === 0">
+          <div class="empty-icon">📋</div>No appointments found.
+        </div>
+        <div class="table-wrap" ng-if="appointments.length > 0">
+          <table class="vs-table">
+            <thead>
+              <tr>
+                <th>#</th><th>Customer</th><th>Vehicle</th><th>Service</th><th>Date</th><th>Mechanic</th><th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="a in appointments">
+                <td class="color-muted">{{$index + 1}}</td>
+                <td class="fw-600">{{a.firstName}} {{a.lastName}}</td>
+                <td>{{a.make}} {{a.model}} ({{a.registrationNo}})</td>
+                <td>{{a.serviceType}}</td>
+                <td>
+                  <div class="fw-600">{{a.appointmentDate | date:'dd MMM yyyy'}}</div>
+                  <div style="font-size: 13px; color: var(--text-muted);">{{a.appointmentTime}}</div>
+                </td>
+                <td>
+                  <span ng-if="a.mechanicName && a.mechanicName !== '-'" class="fw-600 color-blue">
+                    {{a.mechanicName}}
+                  </span>
+                  
+                  <select ng-if="!a.mechanicName || a.mechanicName === '-'" 
+                          class="vs-select" 
+                          ng-model="a.newMechanic" 
+                          ng-change="assignMechanic(a)"
+                          style="padding: 4px 8px; font-size: 13px; height: auto;">
+                    <option value="">Assign Mechanic...</option>
+                    <option ng-repeat="m in mechanics" value="{{m.name}}">{{m.name}} ({{m.specialty}})</option>
+                  </select>
+                </td>
+                <td><span ng-class="statusClass(a.status)">{{a.status}}</span></td>
+                <td>
+                  <div class="td-actions">
+                    <button class="btn-primary sm" ng-if="a.status === 'Pending'"                               ng-click="updateStatus(a,'Approved')">Approve</button>
+                    <button class="btn-success"    ng-if="a.status !== 'Completed' && a.status !== 'Cancelled'" ng-click="updateStatus(a,'Completed')">Complete</button>
+                    <button class="btn-danger"     ng-if="a.status !== 'Cancelled' && a.status !== 'Completed'" ng-click="updateStatus(a,'Cancelled')">Cancel</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CUSTOMERS TAB ── -->
+    <div ng-show="activeTab === 'customers'" class="fade-in-up">
+      <div class="page-heading mb-8">Customers</div>
+      <div class="page-subheading">Browse and search registered customers</div>
+      <div class="vs-card">
+        <div class="card-header">
+          <span class="card-title">Customer List</span>
+          <div class="search-wrap">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="vs-input" ng-model="searchQuery" placeholder="Search name, email, phone..."/>
+          </div>
+        </div>
+        <div class="empty-state" ng-if="customers.length === 0">
+          <div class="empty-icon">👤</div>No customers found.
+        </div>
+        <div class="table-wrap" ng-if="customers.length > 0">
+          <table class="vs-table">
+            <thead>
+              <tr>
+                <th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Vehicles</th><th>Joined</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="c in filteredCustomers()">
+                <td class="color-muted">{{c.id}}</td>
+                <td class="fw-600">{{c.firstName}} {{c.lastName}}</td>
+                <td>{{c.email}}</td>
+                <td>{{c.phone}}</td>
+                <td><span class="badge badge-approved">{{c.vehicleCount || 0}} vehicles</span></td>
+                <td class="color-muted">{{c.createdAt | date:'dd MMM yyyy'}}</td>
+                <td>
+                  <div class="td-actions">
+                    <button class="btn-danger sm" ng-click="deleteCustomer(c.id)">Delete</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── VEHICLES TAB ── -->
+    <div ng-show="activeTab === 'vehicles'" class="fade-in-up">
+      <div class="page-heading mb-8">All Vehicles</div>
+      <div class="page-subheading">Registered vehicles across all customers</div>
+      
+      <div class="vs-card">
+        <div class="card-header"><span class="card-title">Vehicles Directory</span></div>
+        
+        <div class="empty-state" ng-if="allVehicles.length === 0">
+          <div class="empty-icon">🚗</div>No vehicles found.
+        </div>
+
+        <div class="table-wrap" ng-if="allVehicles.length > 0">
+          <table class="vs-table">
+            <thead>
+              <tr>
+                <th>Reg No</th><th>Owner</th><th>Contact</th><th>Make & Model</th><th>Year</th><th>Type</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="v in allVehicles">
+                <td><span class="fw-600 color-blue">{{v.registrationNo}}</span></td>
+                <td class="fw-600">{{v.firstName}} {{v.lastName}}</td>
+                <td>{{v.phone}}</td>
+                <td>{{v.make}} {{v.model}}</td>
+                <td>{{v.year}}</td>
+                <td>{{v.vehicleType}}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── MECHANICS TAB ── -->
+    <div ng-show="activeTab === 'mechanics'" class="fade-in-up">
+      <div class="page-heading mb-8">Mechanics</div>
+      <div class="page-subheading">Manage your service center staff</div>
+      
+      <div class="vs-card">
+        <div class="card-header"><span class="card-title">Staff Directory</span></div>
+        
+        <div class="empty-state" ng-if="mechanics.length === 0">
+          <div class="empty-icon">👨‍🔧</div>No mechanics found.
+        </div>
+
+        <div class="table-wrap" ng-if="mechanics.length > 0">
+          <table class="vs-table">
+            <thead>
+              <tr>
+                <th>ID</th><th>Name</th><th>Contact</th><th>Specialty</th><th>Status</th><th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="m in mechanics">
+                <td class="color-muted">#M-0{{m.id}}</td>
+                <td class="fw-600">{{m.name}}</td>
+                <td>{{m.phone}}</td>
+                <td>{{m.specialty}}</td>
+                <td>
+                  <span ng-class="{'badge badge-completed': m.status === 'Active', 'badge badge-pending': m.status !== 'Active'}">
+                    {{m.status}}
+                  </span>
+                </td>
+                <td>
+                  <div class="td-actions">
+                    <button class="btn-primary sm" ng-click="toggleMechanicStatus(m)">Swap Status</button>
+                    <button class="btn-danger sm" ng-click="deleteMechanic(m.id)">Remove</button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div ng-show="activeTab === 'invoices'" class="fade-in-up">
+      <div class="page-heading mb-8">Invoices</div>
+      <div class="page-subheading">Manage payments and billing details</div>
+      <div class="vs-card mb-24">
+        <div class="card-header">
+          <span class="card-title">🧾 Manage Invoices</span>
+        </div>
+        <div class="table-wrap">
+          <table class="vs-table">
+            <thead>
+              <tr>
+                <th>Customer</th>
+                <th>Service</th>
+                <th>Labor (₹)</th>
+                <th>Parts (₹)</th>
+                <th>Status</th>
+                <th>Mode</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr ng-repeat="inv in allInvoices">
+                <td class="fw-600">{{inv.firstName}} {{inv.lastName}}</td>
+                <td>{{inv.serviceType}}</td>
+                  
+                <td><input type="number" class="vs-input" style="width: 80px; padding: 4px;" ng-model="inv.laborCost"></td>
+                
+                <td><input type="number" class="vs-input" style="width: 80px; padding: 4px;" ng-model="inv.partsCost"></td>
+                
+                <td>
+                  <select class="vs-select" style="padding: 4px;" ng-model="inv.paymentStatus">
+                    <option value="Unpaid">Unpaid</option>
+                    <option value="Paid">Paid</option>
+                  </select>
+                </td>
+
+                <td>
+                  <select class="vs-select" style="padding: 4px;" ng-model="inv.paymentMode">
+                    <option value="">None</option>
+                    <option value="Cash">Cash</option>
+                    <option value="UPI">UPI</option>
+                    <option value="Card">Card</option>
+                  </select>
+                </td>
+
+                <td>
+                  <button class="btn-primary sm" ng-click="saveInvoice(inv)">Save</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+  </main>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

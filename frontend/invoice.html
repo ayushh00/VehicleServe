@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="VehicleApp" ng-controller="InvoiceController">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VehicleServe — Invoice</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ══════════════ NAVBAR ══════════════ -->
+<nav class="vs-navbar">
+  <a class="navbar-brand" href="index.html">⚙ VehicleServe</a>
+  <div class="navbar-links ml-auto">
+    <a href="customer.html" class="nav-link">← Dashboard</a>
+  </div>
+  <div class="navbar-actions">
+    <button class="btn-secondary sm" ng-click="printInvoice()">🖨 Print</button>
+  </div>
+</nav>
+
+<!-- ══════════════ INVOICE PAGE ══════════════ -->
+<div class="invoice-page">
+
+  <!-- Loading -->
+  <div class="empty-state" ng-if="loading">
+    <div class="empty-icon">⏳</div>Loading invoice...
+  </div>
+
+  <!-- Error -->
+  <div class="empty-state" ng-if="error" style="color:var(--danger);">
+    <div class="empty-icon">⚠</div>{{error}}
+  </div>
+
+  <!-- ── INVOICE FROM API ── -->
+  <div class="invoice-card fade-in-up" ng-if="!loading && !error && invoice">
+
+    <div class="invoice-header">
+      <div>
+        <div class="invoice-logo-text">⚙ VehicleServe</div>
+        <div class="invoice-logo-sub">Professional Vehicle Services</div>
+        <div class="invoice-logo-sub">Nashik, Maharashtra · +91 98765 43210</div>
+      </div>
+      <div>
+        <div class="invoice-title">INVOICE</div>
+        <div class="invoice-num">#{{invoice.invoiceNo}}</div>
+      </div>
+    </div>
+
+    <div class="invoice-meta">
+      <div>
+        <div class="meta-label">Invoice No</div>
+        <div class="meta-value">#{{invoice.invoiceNo}}</div>
+      </div>
+      <div>
+        <div class="meta-label">Invoice Date</div>
+        <div class="meta-value">{{invoice.date | date:'dd MMM yyyy'}}</div>
+      </div>
+      <div>
+        <div class="meta-label">Payment Status</div>
+        <span ng-class="paymentClass(invoice.paymentStatus)">{{invoice.paymentStatus}}</span>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+
+    <div class="invoice-parties">
+      <div>
+        <div class="party-label">Bill To</div>
+        <div class="party-name">{{invoice.customerName}}</div>
+        <div class="party-detail">{{invoice.customerEmail}}</div>
+        <div class="party-detail">{{invoice.customerPhone}}</div>
+      </div>
+      <div>
+        <div class="party-label">Vehicle Details</div>
+        <div class="party-name">{{invoice.vehicleMake}} {{invoice.vehicleModel}}</div>
+        <div class="party-detail">Reg No: <span class="color-blue">{{invoice.vehicleRegNo}}</span></div>
+        <div class="party-detail">Year: {{invoice.vehicleYear}}</div>
+      </div>
+    </div>
+
+    <div class="table-wrap mb-8">
+      <table class="vs-table">
+        <thead>
+          <tr>
+            <th>Description / Service</th>
+            <th style="text-align:right;">Labour Cost</th>
+            <th style="text-align:right;">Parts Cost</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <div class="fw-600">{{invoice.serviceType}}</div>
+              <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">{{invoice.notes || 'Standard service'}}</div>
+            </td>
+            <td style="text-align:right;">₹{{invoice.labourCost | number:2}}</td>
+            <td style="text-align:right;">₹{{invoice.partsCost  | number:2}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="invoice-totals">
+      <div class="total-row"><span>Subtotal</span><span>₹{{invoice.subtotal | number:2}}</span></div>
+      <div class="total-row"><span>GST (18%)</span><span>₹{{invoice.gst | number:2}}</span></div>
+      <div class="total-row grand"><span>Total</span><span>₹{{invoice.total | number:2}}</span></div>
+    </div>
+
+    <hr class="divider"/>
+
+    <div class="invoice-bottom">
+      <div>
+        <div class="meta-label mb-8">Payment Mode</div>
+        <span ng-if="invoice.paymentMode === 'Cash'"  class="badge badge-completed">💵 Cash</span>
+        <span ng-if="invoice.paymentMode === 'Card'"  class="badge badge-approved">💳 Card</span>
+        <span ng-if="invoice.paymentMode === 'UPI'"   class="badge badge-approved">📱 UPI</span>
+        <span ng-if="!invoice.paymentMode"            class="badge badge-pending">Pending</span>
+      </div>
+      <button class="btn-secondary" ng-click="printInvoice()">🖨 Print Invoice</button>
+    </div>
+
+    <div class="invoice-thankyou">
+      Thank you for choosing <span class="color-blue fw-600">VehicleServe</span>. We look forward to serving you again.
+    </div>
+  </div>
+  
+  <div class="empty-state fade-in-up" ng-if="!loading && !error && !invoice" style="margin-top: 40px;">
+    <div class="empty-icon" style="font-size: 48px; margin-bottom: 16px;">🧾</div>
+    <h3 style="margin-bottom: 8px;">No Invoice Selected</h3>
+    <p class="color-muted" style="margin-bottom: 24px;">Please select a completed service from your dashboard to view its invoice.</p>
+    <a href="customer.html" class="btn-primary">Go to Dashboard</a>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

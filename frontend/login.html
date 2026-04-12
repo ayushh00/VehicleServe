@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="VehicleApp" ng-controller="LoginController">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VehicleServe — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ══════════════ NAVBAR ══════════════ -->
+<nav class="vs-navbar">
+  <a class="navbar-brand" href="index.html">⚙ VehicleServe</a>
+  <div class="navbar-links ml-auto">
+    <a href="index.html" class="nav-link">← Back to Home</a>
+  </div>
+</nav>
+
+<!-- ══════════════ LOGIN / REGISTER ══════════════ -->
+<div class="login-page">
+  <div class="login-card fade-in-up">
+
+    <div class="login-logo">⚙ VehicleServe</div>
+    <div class="login-sub">Manage your vehicle services seamlessly</div>
+
+    <!-- Tabs -->
+    <div class="vs-tabs">
+      <div class="vs-tab" ng-class="{active: activeTab === 'login'}"    ng-click="setTab('login')">Login</div>
+      <div class="vs-tab" ng-class="{active: activeTab === 'register'}" ng-click="setTab('register')">Register</div>
+    </div>
+
+    <!-- ── LOGIN FORM ── -->
+    <form ng-show="activeTab === 'login'" ng-submit="login()">
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="vs-input" ng-model="loginData.email" placeholder="you@example.com" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="vs-input" ng-model="loginData.password" placeholder="Enter your password" required/>
+      </div>
+      
+      <div class="alert-error" ng-if="loginError">⚠ {{loginError}}</div>
+      
+      <button type="submit" class="btn-primary full">Login →</button>
+      
+      <div class="register-hint mt-16">
+        Don't have an account? <span ng-click="setTab('register')">Register here</span>
+      </div>
+    </form>
+
+    <!-- ── REGISTER FORM ── -->
+    <form ng-show="activeTab === 'register'" ng-submit="register()">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" class="vs-input" ng-model="registerData.firstName" placeholder="John" required/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" class="vs-input" ng-model="registerData.lastName" placeholder="Doe" required/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" class="vs-input" ng-model="registerData.email" placeholder="you@example.com" required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone Number</label>
+        <input type="tel" 
+               class="vs-input" 
+               ng-model="registerData.phone" 
+               placeholder="e.g. 9876543210" 
+               pattern="[0-9]{10}" 
+               maxlength="10" 
+               title="Please enter exactly 10 digits" 
+               required/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="vs-input" ng-model="registerData.password" placeholder="Create a strong password" required/>
+      </div>
+      
+      <div class="alert-error"   ng-if="registerError">⚠ {{registerError}}</div>
+      <div class="alert-success" ng-if="registerSuccess">✓ {{registerSuccess}}</div>
+      
+      <button type="submit" class="btn-primary full">Create Account →</button>
+      
+      <div class="register-hint mt-16">
+        Already have an account? <span ng-click="setTab('login')">Login here</span>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

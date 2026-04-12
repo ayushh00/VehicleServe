@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="VehicleApp">
+  <head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>VehicleServe — Home</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+    <link rel="stylesheet" href="style.css"/>
+  </head>
+  <body ng-controller="HomeController">
+
+    <!-- ══════════════ NAVBAR ══════════════ -->
+    <nav class="vs-navbar">
+      <a class="navbar-brand" href="index.html">⚙ VehicleServe</a>
+      <div class="navbar-links">
+        <a href="index.html"   class="nav-link active">Home</a>
+        <a class="nav-link" style="cursor: pointer;" onclick="document.getElementById('services').scrollIntoView()">Services</a>
+        <a class="nav-link" style="cursor: pointer;" onclick="document.getElementById('about').scrollIntoView()">About</a>
+      </div>
+      <div class="navbar-actions" style="display: flex; align-items: center; gap: 16px;">
+        <span ng-hide="isLoggedIn" style="display: flex; gap: 12px;">
+          <a href="login.html" class="btn-primary sm">Login</a>
+          <a href="login.html?tab=register" class="btn-secondary sm">Register</a>
+        </span>
+
+        <span ng-show="isLoggedIn" style="display: flex; align-items: center; gap: 16px;">
+          <a href="customer.html" class="nav-link" style="margin-right: 8px;">Dashboard</a>
+          <span class="color-muted" style="font-weight: 500; font-size: 14px;">Hi, {{userName}}</span>
+          <a ng-click="logout()" class="btn-secondary sm" style="cursor:pointer;">Logout</a>
+        </span>
+      </div>
+    </nav>
+
+    <!-- ══════════════ HERO ══════════════ -->
+    <section class="hero-section">
+      <div class="container">
+        <div class="hero-inner">
+          <div class="hero-content fade-in-up">
+            <h1 class="hero-heading">
+              Your Vehicle Deserves<br>the <span class="accent">Best Service</span>
+            </h1>
+            <p class="hero-sub">
+              Book appointments, track repairs, and get instant invoices — all in one place.
+              Trusted by 500+ customers across the city.
+            </p>
+            <div class="hero-buttons">
+              <a href="appointment.html" class="btn-primary lg">🗓 Book Appointment</a>
+              <a class="btn-secondary lg" style="cursor: pointer;" onclick="document.getElementById('services').scrollIntoView()">Learn More</a>
+            </div>
+          </div>
+          <div class="hero-visual">
+            <div class="hero-car">🚗</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ STATS ROW ══════════════ -->
+    <section class="section-alt" style="padding: 28px 0;">
+      <div class="container">
+        <div class="grid-4">
+          <div class="stat-card">
+            <span class="stat-icon">👤</span>
+            <div class="stat-number">500+</div>
+            <div class="stat-label">Happy Customers</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">🔧</span>
+            <div class="stat-number">1000+</div>
+            <div class="stat-label">Services Done</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">👨‍🔧</span>
+            <div class="stat-number">50+</div>
+            <div class="stat-label">Expert Mechanics</div>
+          </div>
+          <div class="stat-card">
+            <span class="stat-icon">⭐</span>
+            <div class="stat-number">4.8</div>
+            <div class="stat-label">Average Rating</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ SERVICES ══════════════ -->
+    <section id="services" class="section">
+      <div class="container">
+        <div class="text-center mb-32">
+          <h2 class="section-title">What We Offer</h2>
+          <p class="section-sub">Professional vehicle care from certified mechanics</p>
+        </div>
+        <div class="grid-3">
+          <div class="service-card">
+            <span class="svc-icon">🔧</span>
+            <div class="svc-title">Oil Change</div>
+            <div class="svc-desc">Fresh engine oil and filter replacement to keep your engine running smoothly and extend its life.</div>
+            <a href="appointment.html" class="btn-primary sm" style="align-self:center;">Book Now →</a>
+          </div>
+          <div class="service-card">
+            <span class="svc-icon">🔋</span>
+            <div class="svc-title">Battery Replacement</div>
+            <div class="svc-desc">Quick battery testing and replacement with top-brand units. No more unexpected breakdowns.</div>
+            <a href="appointment.html" class="btn-primary sm" style="align-self:center;">Book Now →</a>
+          </div>
+          <div class="service-card">
+            <span class="svc-icon">🔩</span>
+            <div class="svc-title">Full Service</div>
+            <div class="svc-desc">Complete bumper-to-bumper inspection. Oil, brakes, tyres, electrics — everything covered.</div>
+            <a href="appointment.html" class="btn-primary sm" style="align-self:center;">Book Now →</a>
+          </div>
+          <div class="service-card">
+            <span class="svc-icon">🛞</span>
+            <div class="svc-title">Tyre Replacement</div>
+            <div class="svc-desc">Tyre fitting, balancing, and alignment from a wide selection of brands at competitive prices.</div>
+            <a href="appointment.html" class="btn-primary sm" style="align-self:center;">Book Now →</a>
+          </div>
+          <div class="service-card">
+            <span class="svc-icon">🔍</span>
+            <div class="svc-title">Engine Check</div>
+            <div class="svc-desc">Advanced OBD diagnostic scan to identify fault codes and ensure peak engine performance.</div>
+            <a href="appointment.html" class="btn-primary sm" style="align-self:center;">Book Now →</a>
+          </div>
+          <div class="service-card">
+            <span class="svc-icon">❄️</span>
+            <div class="svc-title">AC Service</div>
+            <div class="svc-desc">Gas recharge, filter cleaning, and full air conditioning system health check for a cool ride.</div>
+            <a href="appointment.html" class="btn-primary sm" style="align-self:center;">Book Now →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ ABOUT ══════════════ -->
+    <section id="about" class="section section-alt">
+      <div class="container">
+        <div class="about-inner">
+          <div class="about-content">
+            <h2 class="section-title">
+              Why Choose <span class="color-orange">VehicleServe?</span>
+            </h2>
+            <p class="color-muted mt-12" style="font-size:15px; line-height:1.8;">
+              We combine technology with expert craftsmanship to deliver a service experience that is fast, transparent, and reliable.
+            </p>
+            <div class="about-list">
+              <div class="about-item">
+                <span class="about-item-icon">✅</span>
+                <div>
+                  <div class="about-item-title">Transparent Pricing</div>
+                  <div class="about-item-text">No hidden charges. You see a full invoice before you pay.</div>
+                </div>
+              </div>
+              <div class="about-item">
+                <span class="about-item-icon">⚡</span>
+                <div>
+                  <div class="about-item-title">Fast Turnaround</div>
+                  <div class="about-item-text">Most services completed same day. We value your time.</div>
+                </div>
+              </div>
+              <div class="about-item">
+                <span class="about-item-icon">🛡️</span>
+                <div>
+                  <div class="about-item-title">Service Warranty</div>
+                  <div class="about-item-text">All services backed by a 30-day guarantee on parts and labour.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="about-visual">
+            <div class="vs-card text-center" style="padding:36px 24px;">
+              <div style="font-size:64px; margin-bottom:16px;">🏆</div>
+              <div style="font-size:20px; font-weight:700; margin-bottom:8px;">Award-Winning Service</div>
+              <div class="color-muted" style="font-size:14px;">Recognised as the best vehicle service centre for 3 consecutive years.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══════════════ FOOTER ══════════════ -->
+    <footer class="vs-footer">
+      <div class="container">
+        <div class="footer-logo">⚙ VehicleServe</div>
+        <div>© 2025 VehicleServe. All rights reserved.</div>
+        <div class="footer-links">
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Contact Us</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+      angular.module('VehicleApp').controller('HomeController', function($scope, $window) {
+        // Look for the customerId in sessionStorage (exactly how app.js saves it!)
+        var customerId = $window.sessionStorage.getItem('customerId'); 
+        var customerName = $window.sessionStorage.getItem('customerName');
+      
+        if (customerId) {
+            // User IS logged in
+            $scope.isLoggedIn = true;
+            $scope.userName = customerName || "User";
+        } else {
+            // User is NOT logged in
+            $scope.isLoggedIn = false;
+        }
+
+        // Handle the logout button
+        $scope.logout = function() {
+            $window.sessionStorage.removeItem('customerId');
+            $window.sessionStorage.removeItem('customerName');
+            $window.location.href = 'login.html';
+        };
+      });
+    </script>
+  </body>
+</html>

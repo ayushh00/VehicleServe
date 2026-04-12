@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="VehicleApp" ng-controller="CustomerController">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VehicleServe — My Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ══════════════ NAVBAR ══════════════ -->
+<nav class="vs-navbar">
+  <a class="navbar-brand" href="index.html">⚙ VehicleServe</a>
+  <div class="navbar-links">
+    <a href="index.html"       class="nav-link">Home</a>
+    <a href="customer.html"    class="nav-link active">Dashboard</a>
+    <a href="appointment.html" class="nav-link">Book Service</a>
+  </div>
+  <div class="navbar-actions" style="display: flex; align-items: center; gap: 16px;">
+    <span class="color-muted" style="font-weight: 500; font-size: 14px;">Hi, {{customerName}}</span>
+    <a ng-click="logout()" class="btn-secondary sm" style="cursor:pointer;">Logout</a>
+  </div>
+</nav>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="container" style="padding-top:32px; padding-bottom:40px;">
+
+  <!-- Page Heading -->
+<div class="fade-in-up mb-24">
+    <div class="page-heading">Welcome, <span class="color-blue">{{customerName}}</span>!</div>
+    <div class="page-subheading">Manage your vehicles and track service appointments</div>
+  </div>
+
+  <!-- ── STATS ── -->
+  <div class="grid-4 mb-24">
+    <div class="stat-card">
+      <span class="stat-icon">🚗</span>
+      <div class="stat-number">{{stats.vehicles}}</div>
+      <div class="stat-label">My Vehicles</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">🗓</span>
+      <div class="stat-number">{{stats.appointments}}</div>
+      <div class="stat-label">Appointments</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">⏳</span>
+      <div class="stat-number warn">{{stats.pending}}</div>
+      <div class="stat-label">Pending Services</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-icon">💰</span>
+      <div class="stat-number">₹{{stats.totalSpent}}</div>
+      <div class="stat-label">Total Spent</div>
+    </div>
+  </div>
+
+  <!-- ── MY VEHICLES ── -->
+  <div class="vs-card mb-24">
+    <div class="card-header">
+      <span class="card-title">🚗 My Vehicles</span>
+      <button class="btn-primary sm" ng-click="openModal()">+ Add Vehicle</button>
+    </div>
+    <div class="empty-state" ng-if="vehicles.length === 0">
+      <div class="empty-icon">🚘</div>
+      No vehicles added yet. Click "Add Vehicle" to get started.
+    </div>
+    <div class="table-wrap" ng-if="vehicles.length > 0">
+      <table class="vs-table">
+        <thead>
+          <tr>
+            <th>Reg No</th><th>Make</th><th>Model</th><th>Year</th><th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="v in vehicles">
+            <td><span class="fw-600 color-blue">{{v.registrationNo}}</span></td>
+            <td>{{v.make}}</td>
+            <td>{{v.model}}</td>
+            <td>{{v.year}}</td>
+            <td>{{v.vehicleType}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ── MY APPOINTMENTS ── -->
+  <div class="vs-card">
+    <div class="card-header">
+      <span class="card-title">🗓 My Appointments</span>
+      <a href="appointment.html" class="btn-primary sm">+ Book New</a>
+    </div>
+    <div class="empty-state" ng-if="appointments.length === 0">
+      <div class="empty-icon">📋</div>
+      No appointments yet. Book a service to get started.
+    </div>
+    <div class="table-wrap" ng-if="appointments.length > 0">
+      <table class="vs-table">
+        <thead>
+          <tr>
+            <th>Date</th><th>Service</th><th>Vehicle</th><th>Mechanic</th><th>Status</th><th>Invoice</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="a in appointments">
+            <td>{{a.appointmentDate | date:'dd MMM yyyy'}}</td>
+            <td class="fw-600">{{a.serviceType}}</td>
+            <td>{{a.make}} {{a.model}}</td>
+            <td>{{a.mechanicName || 'Unassigned'}}</td>
+            <td><span ng-class="statusClass(a.status)">{{a.status}}</span></td>
+            <td>
+              <a ng-if="a.status === 'Completed'" href="invoice.html?id={{a.invoiceId}}" class="btn-primary sm">View</a>
+              <span ng-if="a.status !== 'Completed'" class="color-muted" style="font-size:13px;">—</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════ ADD VEHICLE MODAL ══════════════ -->
+<div class="modal-overlay" ng-show="showModal">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title">Add New Vehicle</span>
+      <button class="modal-close" ng-click="closeModal()">✕</button>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Registration Number</label>
+      <input type="text" class="vs-input" ng-model="newVehicle.regNo" placeholder="e.g. MH12AB1234"/>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Make / Brand</label>
+        <input type="text" class="vs-input" ng-model="newVehicle.make" placeholder="e.g. Maruti"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Model</label>
+        <input type="text" class="vs-input" ng-model="newVehicle.model" placeholder="e.g. Swift"/>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Year</label>
+        <input type="number" class="vs-input" ng-model="newVehicle.year" placeholder="e.g. 2021"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Vehicle Type</label>
+        <select class="vs-select" ng-model="newVehicle.vehicleType">
+          <option value="">Select type</option>
+          <option>Hatchback</option>
+          <option>Sedan</option>
+          <option>SUV</option>
+          <option>MUV</option>
+          <option>Truck</option>
+          <option>Bike</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="alert-error" ng-if="addVehicleError">⚠ {{addVehicleError}}</div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" ng-click="closeModal()">Cancel</button>
+      <button class="btn-primary"   ng-click="addVehicle()">Add Vehicle</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer class="vs-footer">
+  <div class="container">© 2025 VehicleServe. All rights reserved.</div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

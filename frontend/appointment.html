@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="VehicleApp" ng-controller="AppointmentController">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>VehicleServe — Book Appointment</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular-route.min.js"></script>
+  <link rel="stylesheet" href="style.css"/>
+</head>
+<body>
+
+<!-- ══════════════ NAVBAR ══════════════ -->
+<nav class="vs-navbar">
+  <a class="navbar-brand" href="index.html">⚙ VehicleServe</a>
+  <div class="navbar-links">
+    <a href="index.html"       class="nav-link">Home</a>
+    <a href="customer.html"    class="nav-link">Dashboard</a>
+    <a href="appointment.html" class="nav-link active">Book Service</a>
+  </div>
+  <div class="navbar-actions">
+    <a href="login.html" class="btn-secondary sm">Logout</a>
+  </div>
+</nav>
+
+<!-- ══════════════ MAIN ══════════════ -->
+<div class="container" style="padding-top:40px; padding-bottom:48px;">
+  <div class="appt-wrap">
+
+    <!-- ── SUCCESS STATE ── -->
+    <div class="success-card fade-in-up" ng-if="bookingDone">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Appointment Booked Successfully!</div>
+      <div class="success-text">
+        Your service appointment has been confirmed.<br>
+        Please check the dashboard for more details.
+      </div>
+      <div class="success-actions">
+        <button class="btn-primary"  ng-click="bookAnother()">Book Another →</button>
+        <a href="customer.html" class="btn-secondary">View Dashboard</a>
+      </div>
+    </div>
+
+    <!-- ── BOOKING FORM ── -->
+    <div class="vs-card fade-in-up" ng-if="!bookingDone">
+      <div class="card-header">
+        <span class="card-title">🗓 Book a Service Appointment</span>
+      </div>
+
+      <!-- Vehicle -->
+      <div class="form-group">
+        <label class="form-label">Select Vehicle</label>
+        <select class="vs-select" ng-model="appointment.vehicleId">
+          <option value="">— Choose your vehicle —</option>
+          <option ng-repeat="v in vehicles" value="{{v.id}}">
+            {{v.regNo}} — {{v.make}} {{v.model}} ({{v.year}})
+          </option>
+        </select>
+        <div ng-if="vehicles.length === 0" style="font-size:12px; color:var(--text-muted); margin-top:6px;">
+          No vehicles found. <a href="customer.html">Add a vehicle first →</a>
+        </div>
+      </div>
+
+      <!-- Service Type -->
+      <div class="form-group">
+        <label class="form-label">Service Type</label>
+        <select class="vs-select" ng-model="appointment.serviceType">
+          <option value="">— Select service —</option>
+          <option ng-repeat="s in serviceTypes" value="{{s}}">{{s}}</option>
+        </select>
+      </div>
+
+      <!-- Date & Time -->
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Preferred Date</label>
+          <input type="date" class="vs-input" ng-model="appointment.date" style="color-scheme:dark;"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Preferred Time</label>
+          <input type="time" class="vs-input" ng-model="appointment.time" style="color-scheme:dark;"/>
+        </div>
+      </div>
+
+      <!-- Notes -->
+      <div class="form-group">
+        <label class="form-label">Additional Notes (optional)</label>
+        <textarea class="vs-textarea" ng-model="appointment.notes"
+                  placeholder="Describe the issue or any specific requirements..."></textarea>
+      </div>
+
+      <div class="alert-error" ng-if="bookingError">⚠ {{bookingError}}</div>
+
+      <button class="btn-primary full" style="padding:13px;" ng-click="confirmBooking()">
+        ✓ Confirm Booking
+      </button>
+
+      <div class="text-center mt-16" style="font-size:13px; color:var(--text-muted);">
+        Need help? Call us at <span class="color-blue">+91 98765 43210</span>
+      </div>
+    </div>
+
+    <!-- Info Boxes -->
+    <div class="info-boxes">
+      <div class="info-box">
+        <div class="info-box-icon">⚡</div>
+        <div class="info-box-text">Same-day service available</div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-icon">🛡️</div>
+        <div class="info-box-text">30-day warranty</div>
+      </div>
+      <div class="info-box">
+        <div class="info-box-icon">📞</div>
+        <div class="info-box-text">24/7 support</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════ FOOTER ══════════════ -->
+<footer class="vs-footer">
+  <div class="container">© 2025 VehicleServe. All rights reserved.</div>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
